@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Lahari — DevOps Engineer</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --panel:#11161d;
+    --panel-2:#151b23;
+    --line:#232b36;
+    --text:#dbe2ea;
+    --dim:#7d8a9a;
+    --dimmer:#54606f;
+    --amber:#e8a33d;
+    --green:#3fb97c;
+    --blue:#4d9de0;
+    --mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  a{color:inherit;}
+  ::selection{background:var(--amber);color:#0d1117;}
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- top status bar ---------- */
+  .statusbar{
+    border-bottom:1px solid var(--line);
+    background:rgba(13,17,23,0.9);
+    backdrop-filter:blur(6px);
+    position:sticky;top:0;z-index:50;
+  }
+  .statusbar .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:52px;font-family:var(--mono);font-size:12.5px;color:var(--dim);
+  }
+  .statusbar .brand{color:var(--text);font-weight:600;letter-spacing:0.3px;}
+  .statusbar .dot{
+    display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--green);margin-right:8px;
+    box-shadow:0 0 0 0 rgba(63,185,124,0.6);
+    animation:pulse 2.4s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(63,185,124,0.5);}
+    70%{box-shadow:0 0 0 6px rgba(63,185,124,0);}
+    100%{box-shadow:0 0 0 0 rgba(63,185,124,0);}
+  }
+  .statusbar nav{display:flex;gap:22px;}
+  .statusbar nav a{color:var(--dim);text-decoration:none;transition:color .15s;}
+  .statusbar nav a:hover, .statusbar nav a:focus-visible{color:var(--amber);}
+  .statusbar nav a:focus-visible{outline:1px solid var(--amber);outline-offset:3px;}
+
+  /* ---------- hero ---------- */
+  .hero{padding:90px 0 60px;}
+  .hero .eyebrow{
+    font-family:var(--mono);font-size:12.5px;color:var(--green);
+    display:flex;align-items:center;gap:8px;margin-bottom:22px;
+  }
+  .hero .eyebrow::before{content:'$';color:var(--dimmer);}
+  .hero h1{
+    font-family:var(--mono);
+    font-size:clamp(28px,5vw,44px);
+    font-weight:700;
+    line-height:1.25;
+    color:#f2f5f8;
+    margin-bottom:18px;
+  }
+  .hero h1 .cursor{
+    display:inline-block;width:10px;height:0.9em;background:var(--amber);
+    margin-left:4px;vertical-align:-2px;
+    animation:blink 1s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .hero p.lede{
+    max-width:640px;color:var(--dim);font-size:16.5px;margin-bottom:34px;
+  }
+  .hero p.lede strong{color:var(--text);font-weight:600;}
+
+  .metrics{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    border:1px solid var(--line);border-radius:6px;overflow:hidden;
+    margin-bottom:34px;
+  }
+  .metric{
+    padding:18px 16px;border-right:1px solid var(--line);background:var(--panel);
+  }
+  .metric:last-child{border-right:none;}
+  .metric .num{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber);}
+  .metric .label{font-size:11.5px;color:var(--dimmer);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px;}
+
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono);font-size:13.5px;padding:11px 20px;border-radius:5px;
+    text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;
+    transition:transform .15s, background .15s, border-color .15s;
+  }
+  .btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  .btn-primary{background:var(--amber);color:#171308;}
+  .btn-primary:hover{transform:translateY(-1px);background:#f2b455;}
+  .btn-ghost{border:1px solid var(--line);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--dim);transform:translateY(-1px);}
+
+  /* ---------- section shell ---------- */
+  section{padding:64px 0;border-top:1px solid var(--line);}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:34px;}
+  .section-head .tag{
+    font-family:var(--mono);font-size:12px;color:var(--dimmer);
+    border:1px solid var(--line);padding:3px 9px;border-radius:4px;
+  }
+  .section-head h2{
+    font-family:var(--mono);font-size:22px;color:#f2f5f8;font-weight:700;
+  }
+
+  /* ---------- pipeline (about) ---------- */
+  .pipeline{display:flex;flex-direction:column;gap:0;}
+  .pstep{
+    display:grid;grid-template-columns:120px 1fr;gap:20px;
+    padding:18px 0;border-bottom:1px dashed var(--line);position:relative;
+  }
+  .pstep:last-child{border-bottom:none;}
+  .pstep .stage{
+    font-family:var(--mono);font-size:12px;color:var(--blue);
+    text-transform:uppercase;letter-spacing:0.6px;padding-top:2px;
+  }
+  .pstep .content h3{font-size:15.5px;color:var(--text);margin-bottom:6px;font-weight:600;}
+  .pstep .content p{color:var(--dim);font-size:14.5px;}
+  .pstep .content .chip{
+    display:inline-block;font-family:var(--mono);font-size:11.5px;color:var(--green);
+    background:rgba(63,185,124,0.08);border:1px solid rgba(63,185,124,0.25);
+    padding:2px 8px;border-radius:3px;margin-top:8px;
+  }
+
+  /* ---------- projects ---------- */
+  .project{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    margin-bottom:22px;overflow:hidden;
+  }
+  .project-head{
+    padding:18px 22px;display:flex;justify-content:space-between;align-items:flex-start;
+    gap:16px;border-bottom:1px solid var(--line);background:var(--panel-2);
+    flex-wrap:wrap;
+  }
+  .project-head .titles h3{font-size:17px;color:#f2f5f8;font-weight:700;margin-bottom:4px;}
+  .project-head .titles .sub{font-family:var(--mono);font-size:12px;color:var(--dimmer);}
+  .project-head .dates{
+    font-family:var(--mono);font-size:12px;color:var(--dim);
+    border:1px solid var(--line);padding:4px 10px;border-radius:4px;white-space:nowrap;
+  }
+  .project-body{padding:20px 22px;}
+  .project-body ul{list-style:none;}
+  .project-body li{
+    position:relative;padding-left:20px;margin-bottom:11px;color:var(--dim);font-size:14.5px;
+  }
+  .project-body li::before{
+    content:'▸';position:absolute;left:0;color:var(--amber);font-size:12px;top:2px;
+  }
+  .project-body li strong{color:var(--text);font-weight:600;}
+  .stackline{
+    display:flex;flex-wrap:wrap;gap:7px;padding:0 22px 20px;
+  }
+  .stackline span{
+    font-family:var(--mono);font-size:11.5px;color:var(--blue);
+    background:rgba(77,157,224,0.08);border:1px solid rgba(77,157,224,0.25);
+    padding:3px 9px;border-radius:3px;
+  }
+
+  /* ---------- skills ---------- */
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;}
+  .skillcard{
+    background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:18px 20px;
+  }
+  .skillcard .k{
+    font-family:var(--mono);font-size:12px;color:var(--amber);text-transform:uppercase;
+    letter-spacing:0.5px;margin-bottom:10px;display:block;
+  }
+  .skillcard .v{color:var(--dim);font-size:13.5px;line-height:1.7;}
+
+  /* ---------- certs / education ---------- */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:20px 22px;}
+  .card h3{font-family:var(--mono);font-size:13px;color:var(--dimmer);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;}
+  .certrow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .certrow:last-child{border-bottom:none;}
+  .certrow .name{color:var(--text);}
+  .certrow .date{font-family:var(--mono);font-size:12px;color:var(--dimmer);white-space:nowrap;}
+  .edu-degree{color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px;}
+  .edu-school{color:var(--dim);font-size:13.5px;margin-bottom:10px;}
+  .edu-meta{font-family:var(--mono);font-size:12px;color:var(--dimmer);margin-bottom:12px;}
+  .edu-course{font-size:13px;color:var(--dim);line-height:1.7;}
+
+  /* ---------- footer / contact ---------- */
+  footer{padding:60px 0 70px;border-top:1px solid var(--line);}
+  .contact-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:34px;text-align:center;
+  }
+  .contact-box h2{font-family:var(--mono);font-size:22px;color:#f2f5f8;margin-bottom:10px;}
+  .contact-box p{color:var(--dim);margin-bottom:24px;font-size:14.5px;}
+  .contact-links{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+  .footnote{text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--dimmer);margin-top:30px;}
+
+  @media (max-width:640px){
+    .metrics{grid-template-columns:repeat(2,1fr);}
+    .metric:nth-child(2){border-right:none;}
+    .pstep{grid-template-columns:1fr;gap:6px;}
+    .twocol{grid-template-columns:1fr;}
+    .statusbar nav{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="statusbar">
+  <div class="wrap">
+    <span class="brand"><span class="dot"></span>lahari@devops:~</span>
+    <nav>
+      <a href="#about">about</a>
+      <a href="#projects">projects</a>
+      <a href="#skills">skills</a>
+      <a href="#certs">certs</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="hero" id="top" style="border-top:none;">
+    <h1>A Lahari builds pipelines<br>that don't wake anyone up at 2am.<span class="cursor"></span></h1>
+    <p class="lede">DevOps Engineer from Lovely Professional University (2026). I containerize, orchestrate, and automate — three end-to-end projects across AWS, Azure and GCP, built to <strong>ship faster</strong> and <strong>fail quietly</strong>.</p>
+
+    <div class="metrics">
+      <div class="metric"><div class="num">99.9%</div><div class="label">less downtime</div></div>
+      <div class="metric"><div class="num">70%</div><div class="label">less manual release effort</div></div>
+      <div class="metric"><div class="num">60%</div><div class="label">faster recovery</div></div>
+      <div class="metric"><div class="num">3</div><div class="label">clouds, one workflow</div></div>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#projects">view projects →</a>
+      <a class="btn btn-ghost" href="https://github.com/Lahari-Haribabu" target="_blank" rel="noopener">github.com/Lahari-Haribabu</a>
+      <a class="btn btn-ghost" href="https://linkedin.com/in/a-lahari" target="_blank" rel="noopener">linkedin</a>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head"><span class="tag">01</span><h2>how I work</h2></div>
+    <div class="pipeline">
+      <div class="pstep">
+        <div class="stage">Build</div>
+        <div class="content">
+          <h3>Containerize everything, standardize nothing by hand</h3>
+          <p>Docker images for every service tier, built the same way across projects so nobody has to guess how a service starts.</p>
+          <span class="chip">Docker · Kubernetes · Helm</span>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="stage">Ship</div>
+        <div class="content">
+          <h3>CI/CD that fails loud in staging, not in prod</h3>
+          <p>Jenkins and GitOps pipelines with SonarQube, Trivy and OWASP checks wired in as hard gates — not warnings people learn to ignore.</p>
+          <span class="chip">Jenkins · ArgoCD · SonarQube · Trivy</span>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="stage">Provision</div>
+        <div class="content">
+          <h3>Infrastructure as code, secrets as code (never as text)</h3>
+          <p>Terraform for environment isolation and RBAC-gated production, Kubernetes Secrets instead of anything sitting in a pipeline file.</p>
+          <span class="chip">Terraform · Ansible · RBAC</span>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="stage">Watch</div>
+        <div class="content">
+          <h3>Know it's broken before someone tells you</h3>
+          <p>Prometheus thresholds and Grafana dashboards tied to real rollback triggers — canary promotion that reads error rates, not just the clock.</p>
+          <span class="chip">Prometheus · Grafana · Alerting</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head"><span class="tag">02</span><h2>projects</h2></div>
+
+    <div class="project">
+      <div class="project-head">
+        <div class="titles">
+          <h3>WanderLust</h3>
+          <div class="sub">end-to-end MERN deployment on AWS EKS</div>
+        </div>
+        <div class="dates">Nov 2025 – Dec 2025</div>
+      </div>
+      <div class="project-body">
+        <ul>
+          <li>Built a complete CI/CD pipeline for a three-tier MERN app using Jenkins, Docker, ArgoCD and AWS EKS — <strong>70% less manual release effort</strong>.</li>
+          <li>Containerized frontend, backend and database tiers, deployed to a two-node auto-scaling EKS cluster via eksctl with <strong>zero-downtime</strong> releases.</li>
+          <li>GitOps delivery with ArgoCD — cluster state version-controlled in Git, one-command rollback on failed releases.</li>
+          <li>OWASP Dependency Check, SonarQube gates and Trivy scanning caught <strong>30+ critical/high vulnerabilities per build</strong>, 100% gate compliance before prod.</li>
+          <li>Prometheus + Grafana (via Helm) and Jenkins alerts tracking 25+ Kubernetes metrics — <strong>60% faster incident detection</strong>.</li>
+        </ul>
+      </div>
+      <div class="stackline">
+        <span>Jenkins</span><span>Docker</span><span>AWS EKS</span><span>ArgoCD</span><span>Trivy</span><span>SonarQube</span><span>Prometheus</span><span>Grafana</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <div class="titles">
+          <h3>Production-Grade Secure CI/CD Platform</h3>
+          <div class="sub">multi-cloud, AWS &amp; Azure</div>
+        </div>
+        <div class="dates">Jan 2026 – Feb 2026</div>
+      </div>
+      <div class="project-body">
+        <ul>
+          <li>Designed a multi-cloud CI/CD platform (Jenkins, GitHub, Docker, Kubernetes, Terraform, ArgoCD) standardizing deployments for <strong>10+ microservices</strong> across DEV/QA/PROD.</li>
+          <li>Terraform-provisioned infrastructure with environment isolation and RBAC-gated PROD approvals — <strong>100% of plaintext secrets eliminated</strong> via Kubernetes Secrets.</li>
+          <li>SonarQube and Trivy gates fail 100% of pipelines on critical/high vulnerabilities — <strong>40% fewer post-deployment defects</strong>.</li>
+          <li>GitOps Kubernetes rollout with ArgoCD, version-controlled promotion and namespace isolation — <strong>60% faster deployment recovery</strong>.</li>
+          <li>Bash scripts on Linux automate build packaging and environment setup end to end.</li>
+        </ul>
+      </div>
+      <div class="stackline">
+        <span>Terraform</span><span>Kubernetes</span><span>ArgoCD</span><span>Jenkins</span><span>Azure</span><span>AWS</span><span>Bash</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <div class="titles">
+          <h3>Zero-Downtime Kubernetes Deployments</h3>
+          <div class="sub">blue-green &amp; canary strategies</div>
+        </div>
+        <div class="dates">Dec 2025 – Jan 2026</div>
+      </div>
+      <div class="project-body">
+        <ul>
+          <li>Implemented Blue-Green and Canary deployments on Kubernetes via ArgoCD — <strong>99.9% less production downtime</strong> during releases.</li>
+          <li>Canary promotion driven by Prometheus error-rate thresholds (&gt;2% over 5 min) instead of a timer, with <strong>automated rollback within 60 seconds</strong>.</li>
+          <li>Liveness/readiness probes and health checks cut failed rollout incidents by <strong>40%</strong>.</li>
+          <li>Grafana dashboards and Prometheus alerts on latency and error rate — <strong>50% faster troubleshooting</strong>.</li>
+        </ul>
+      </div>
+      <div class="stackline">
+        <span>Kubernetes</span><span>ArgoCD</span><span>Prometheus</span><span>Grafana</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="section-head"><span class="tag">03</span><h2>stack</h2></div>
+    <div class="skills-grid">
+      <div class="skillcard"><span class="k">Cloud</span><div class="v">AWS (EC2, EKS, VPC, IAM, S3), Microsoft Azure, Google Cloud Platform</div></div>
+      <div class="skillcard"><span class="k">Containers &amp; Orchestration</span><div class="v">Docker, Kubernetes, Helm, eksctl, microservices, container registries</div></div>
+      <div class="skillcard"><span class="k">CI/CD</span><div class="v">Jenkins, Azure DevOps Pipelines, GitHub Actions, ArgoCD (GitOps)</div></div>
+      <div class="skillcard"><span class="k">Infrastructure as Code</span><div class="v">Terraform, Ansible, YAML, configuration management</div></div>
+      <div class="skillcard"><span class="k">Linux &amp; Scripting</span><div class="v">Ubuntu/Amazon Linux, Bash, systemd, SSH, cron, package management</div></div>
+      <div class="skillcard"><span class="k">Monitoring</span><div class="v">Prometheus, Grafana, Azure Monitor, CloudWatch, log analysis, RCA</div></div>
+      <div class="skillcard"><span class="k">DevSecOps</span><div class="v">SonarQube, Trivy, OWASP Dependency Check, secrets management, RBAC</div></div>
+      <div class="skillcard"><span class="k">Networking &amp; VCS</span><div class="v">DNS, load balancing, ingress, TLS/SSL, Git, GitHub, MySQL</div></div>
+    </div>
+  </section>
+
+  <section id="certs">
+    <div class="section-head"><span class="tag">04</span><h2>certifications &amp; education</h2></div>
+    <div class="twocol">
+      <div class="card">
+        <h3>Certifications</h3>
+        <div class="certrow"><span class="name">Microsoft Certified: Azure Administrator Associate (AZ-104)</span><span class="date">Apr 2025</span></div>
+        <div class="certrow"><span class="name">Generative AI with Large Language Models — Coursera</span><span class="date">Feb 2025</span></div>
+        <div class="certrow"><span class="name">Privacy &amp; Security in Online Social Media — NPTEL</span><span class="date">Mar 2025</span></div>
+      </div>
+      <div class="card">
+        <h3>Education</h3>
+        <div class="edu-degree">B.Tech, Computer Science &amp; Engineering (CS/IT)</div>
+        <div class="edu-school">Lovely Professional University, Jalandhar, Punjab</div>
+        <div class="edu-meta">May 2022 – May 2026 · CGPA 7.03</div>
+        <div class="edu-course">Coursework: Operating Systems, Computer Networks, DBMS, OOPs (Java), Cloud Computing</div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="contact-box">
+      <h2>let's ship something</h2>
+      <p>Open to remote DevOps roles — happy to walk through any of the pipelines above.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:anugalahari27@gmail.com">anugalahari27@gmail.com</a>
+        <a class="btn btn-ghost" href="tel:+918328053241">+91 83280 53241</a>
+        <a class="btn btn-ghost" href="https://linkedin.com/in/a-lahari" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn-ghost" href="https://github.com/Lahari-Haribabu" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <div class="footnote">Bengaluru, India · built with a bias toward uptime</div>
+  </footer>
+</div>
+
+</body>
+</html>
